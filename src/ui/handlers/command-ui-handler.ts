@@ -190,6 +190,35 @@ export class CommandUiHandler extends UiHandler {
     return success;
   }
 
+  override processTap(x: number, y: number): boolean {
+    const command = this.getCommandAt(x - this.commandsContainer.x, y - this.commandsContainer.y);
+    if (command === null) {
+      return false;
+    }
+
+    this.setCursor(command);
+    this.toggleTeraButton();
+    return this.processInput(Button.ACTION);
+  }
+
+  /**
+   * @param x - The X position, relative to {@linkcode commandsContainer}
+   * @param y - The Y position, relative to {@linkcode commandsContainer}
+   * @returns The {@linkcode Command} displayed at the given position, or `null` if there is none
+   */
+  private getCommandAt(x: number, y: number): Command | null {
+    if (this.canTera() && Math.abs(x - this.teraButton.x) <= 16 && Math.abs(y - this.teraButton.y) <= 16) {
+      return Command.TERA;
+    }
+
+    // Outside of the command window
+    if (x < -15 || y < -10) {
+      return null;
+    }
+
+    return (x < 48 ? 0 : 1) + (y < 16 ? 0 : 2);
+  }
+
   canTera(): boolean {
     const activePokemon = globalScene.getField()[this.fieldIndex];
     const currentTeras = globalScene.arena.playerTerasUsed;

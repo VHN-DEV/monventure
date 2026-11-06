@@ -198,6 +198,7 @@ export class GameWrapper {
     this.scene.sys.updateList = new UpdateList(this.scene);
     this.scene["systems"] = this.scene.sys;
     this.scene.input = this.game.input as any;
+    this.scene.input.on = (() => this.scene.input) as any;
     this.scene.scene = this.scene as any; // TODO: This seems wacky
     this.scene.input.keyboard = new KeyboardPlugin(this.scene as any);
     this.scene.input.gamepad = new GamepadPlugin(this.scene as any);

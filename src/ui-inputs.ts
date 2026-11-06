@@ -22,6 +22,9 @@ import type Phaser from "phaser";
 
 type ActionKeys = Record<Button, () => void>;
 
+/** The furthest a touch can travel, in game pixels, while still counting as a tap */
+const MAX_TAP_DISTANCE = 48;
+
 export class UiInputs {
   private events: Phaser.Events.EventEmitter;
   private readonly inputsController: InputsController;
@@ -34,6 +37,18 @@ export class UiInputs {
   private init(): void {
     this.events = this.inputsController.events;
     this.listenInputs();
+    this.listenTaps();
+  }
+
+  /** Forward touches on the game canvas to the UI, so that the on-screen buttons aren't the only way to play. */
+  private listenTaps(): void {
+    globalScene.input.on("pointerup", (pointer: Phaser.Input.Pointer) => {
+      if (!pointer.wasTouch || pointer.getDistance() > MAX_TAP_DISTANCE) {
+        return;
+      }
+      const { ui, uiContainer } = globalScene;
+      ui.processTap(pointer.x / uiContainer.scale - ui.x, pointer.y / uiContainer.scale - ui.y);
+    });
   }
 
   detectInputMethod(evt): void {

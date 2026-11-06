@@ -428,6 +428,21 @@ export abstract class BaseOptionSelectUiHandler<T extends OptionSelectItem> exte
     return success;
   }
 
+  public override processTap(x: number, y: number): boolean {
+    const { x: containerX, y: containerY } = this.optionSelectContainer;
+    if (this.blockInput || x > containerX || x < containerX - this.optionSelectBg.displayWidth) {
+      return false;
+    }
+
+    const row = Math.floor((y - containerY - this.optionSelectText.y) / (114 * this.scale - 3));
+    if (row < 0 || row >= this.maxOptions || !this.options[this.scrollCursor + row]?.selectable) {
+      return false;
+    }
+
+    this.setCursor(row);
+    return this.processInput(Button.ACTION);
+  }
+
   private handleCursorUpDown(button: Button): boolean {
     if (button === Button.UP) {
       if (this.cursor > 0) {

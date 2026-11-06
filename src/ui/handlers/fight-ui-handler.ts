@@ -202,6 +202,22 @@ export class FightUiHandler extends UiHandler implements InfoToggle {
     return success;
   }
 
+  override processTap(x: number, y: number): boolean {
+    // Outside of the moves window, which is the left part of the message box
+    if (x >= 240 || y < -48) {
+      return false;
+    }
+
+    const moveIndex = (x < 123 ? 0 : 1) + (y < -23.5 ? 0 : 2);
+    const pokemon = (globalScene.phaseManager.getCurrentPhase() as CommandPhase).getPokemon();
+    if (moveIndex >= pokemon.getMoveset().length) {
+      return false;
+    }
+
+    this.setCursor(moveIndex);
+    return this.processInput(Button.ACTION);
+  }
+
   /**
    * Adjust the visibility of move names and the cursor icon when the info overlay is toggled
    * @param visible - The visibility of the info overlay; the move names and cursor's visibility will be set to the opposite

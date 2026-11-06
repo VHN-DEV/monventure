@@ -18,6 +18,16 @@ export abstract class UiHandler {
 
   abstract processInput(button: Button): boolean;
 
+  /**
+   * Handle a direct tap on the game canvas.
+   * @param _x - The X position of the tap, relative to the UI container
+   * @param _y - The Y position of the tap, relative to the UI container
+   * @returns Whether the tap did anything
+   */
+  processTap(_x: number, _y: number): boolean {
+    return false;
+  }
+
   getUi() {
     return globalScene.ui;
   }

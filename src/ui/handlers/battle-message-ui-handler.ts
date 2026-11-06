@@ -140,6 +140,10 @@ export class BattleMessageUiHandler extends MessageUiHandler {
     return false;
   }
 
+  override processTap(): boolean {
+    return this.awaitingActionInput && this.processInput(Button.ACTION);
+  }
+
   clear() {
     super.clear();
   }

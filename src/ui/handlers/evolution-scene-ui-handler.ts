@@ -72,6 +72,10 @@ export class EvolutionSceneUiHandler extends MessageUiHandler {
     return false;
   }
 
+  override processTap(): boolean {
+    return this.awaitingActionInput && this.processInput(Button.ACTION);
+  }
+
   setCursor(_cursor: number): boolean {
     return false;
   }

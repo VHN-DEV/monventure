@@ -234,6 +234,15 @@ input:-internal-autofill-selected {
   width: var(--controls-size);
 }
 
+/* Groups are only used for layout: touches next to their buttons must reach the game */
+#touchControls:not([data-configuring]) .control-group {
+  pointer-events: none;
+}
+
+#touchControls:not([data-configuring]) .control-group > * {
+  pointer-events: auto;
+}
+
 .control-group-dpad {
   width: calc(2 * var(--controls-size));
   height: calc(2 * var(--controls-size));
@@ -448,6 +457,14 @@ input:-internal-autofill-selected {
 #control-group-cancel {
   right: var(--controls-size-with-wide-padding);
   bottom: var(--controls-padding);
+}
+
+/* In landscape, keep the button in the side margin so that it doesn't cover the command window */
+@media (orientation: landscape) {
+  #control-group-cancel {
+    right: var(--controls-padding);
+    bottom: calc(var(--controls-size-with-padding) * 2);
+  }
 }
 
 #control-group-extra-1 {

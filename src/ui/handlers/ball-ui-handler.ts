@@ -130,6 +130,22 @@ export class BallUiHandler extends UiHandler {
     return success;
   }
 
+  override processTap(x: number, y: number): boolean {
+    const { x: containerX, y: containerY } = this.pokeballSelectContainer;
+    if (x < containerX || x > containerX + this.pokeballSelectBg.displayWidth) {
+      return false;
+    }
+
+    const row = Math.floor((y - containerY - this.optionsText.y + 1) / (96 * this.scale));
+    // The last row is the cancel option
+    if (row < 0 || row > Object.keys(globalScene.pokeballCounts).length) {
+      return false;
+    }
+
+    this.setCursor(row);
+    return this.processInput(Button.ACTION);
+  }
+
   updateCounts() {
     this.countsText.setText(
       Object.values(globalScene.pokeballCounts)

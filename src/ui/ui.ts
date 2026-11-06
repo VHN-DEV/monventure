@@ -1,7 +1,7 @@
 import { audioManager } from "#app/global-audio-manager";
 import { globalScene } from "#app/global-scene";
 import { settings } from "#app/global-settings-manager";
-import type { Button } from "#enums/buttons";
+import { Button } from "#enums/buttons";
 import { Device } from "#enums/devices";
 import { PlayerGender } from "#enums/player-gender";
 import { TextStyle } from "#enums/text-style";
@@ -287,6 +287,26 @@ export class UI extends Phaser.GameObjects.Container {
     }
 
     return handler.processInput(button);
+  }
+
+  /**
+   * Process a direct tap on the game canvas (delivering it to the current UI handler for processing)
+   * @param x - The X position of the tap, relative to this container
+   * @param y - The Y position of the tap, relative to this container
+   * @returns Whether the tap did anything
+   */
+  public processTap(x: number, y: number): boolean {
+    if (this.overlayActive) {
+      return false;
+    }
+
+    const handler = this.getHandler();
+
+    if (handler instanceof AwaitableUiHandler && handler.tutorialActive) {
+      return handler.processTutorialInput(Button.ACTION);
+    }
+
+    return handler.processTap(x, y);
   }
 
   public showTextPromise(text: string, callbackDelay = 0, prompt = true, promptDelay?: number | null): Promise<void> {
