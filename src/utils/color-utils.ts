@@ -1,5 +1,4 @@
 import { alphaFromArgb, blueFromArgb, greenFromArgb, redFromArgb } from "@material/material-color-utilities";
-import Phaser from "phaser";
 
 // #region @material functions
 

@@ -1,4 +1,4 @@
-import Phaser from "phaser";
+import "phaser";
 
 // #region Types
 

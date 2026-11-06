@@ -2,7 +2,6 @@ import { isDev } from "#constants/app-constants";
 import { Button } from "#enums/buttons";
 import { SettingKeyboard } from "#system/settings-keyboard";
 import type { KeyboardConfig } from "#types/inputs";
-import Phaser from "phaser";
 
 export const CFG_KEYBOARD_QWERTY: KeyboardConfig = {
   padID: "default",

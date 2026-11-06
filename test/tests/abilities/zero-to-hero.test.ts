@@ -6,7 +6,6 @@ import { SpeciesId } from "#enums/species-id";
 import { StatusEffect } from "#enums/status-effect";
 import { GameManager } from "#test/framework/game-manager";
 import i18next from "i18next";
-import Phaser from "phaser";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 describe("Abilities - ZERO TO HERO", () => {

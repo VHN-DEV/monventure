@@ -4,7 +4,6 @@ import { TextStyle } from "#enums/text-style";
 import type { Pokemon } from "#field/pokemon";
 import { addTextObject } from "#ui/text";
 import i18next from "i18next";
-import Phaser from "phaser";
 
 export class PartyExpBar extends Phaser.GameObjects.Container {
   private bg: Phaser.GameObjects.NineSlice;

@@ -1,4 +1,3 @@
-import Phaser from "phaser";
 import { globalManifest } from "../../src/globals/global-manifest";
 import { coerceArray } from "../../src/utils/array";
 import { getCachedUrl } from "../../src/utils/fetch-utils";

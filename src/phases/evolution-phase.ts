@@ -14,7 +14,6 @@ import type { ConfirmModeConfig } from "#types/ui-types";
 import type { EvolutionSceneUiHandler } from "#ui/evolution-scene-ui-handler";
 import { fixedInt } from "#utils/common";
 import i18next from "i18next";
-import Phaser from "phaser";
 
 export class EvolutionPhase extends Phase {
   // FormChangePhase inherits from this, but EvolutionPhase is not abstract.
@@ -110,60 +109,56 @@ export class EvolutionPhase extends Phase {
   }
 
   /**
-   * Configure the sprite, setting its render node data
+   * Configure the sprite, setting its pipeline data
    * @param pokemon - The pokemon object that the sprite information is configured from
    * @param sprite - The sprite object to configure
-   * @param setRenderNode - Whether to also set the render node; should be false
+   * @param setPipeline - Whether to also set the pipeline; should be false
    *  if the sprite is only being updated with new sprite assets
    *
    *
    * @returns The sprite object that was passed in
    */
-  protected configureSprite(pokemon: Pokemon, sprite: Phaser.GameObjects.Sprite, setRenderNode = true): typeof sprite {
+  protected configureSprite(pokemon: Pokemon, sprite: Phaser.GameObjects.Sprite, setPipeline = true): typeof sprite {
     const spriteKey = pokemon.getSpriteKey(true);
     sprite.play(spriteKey);
 
-    if (setRenderNode) {
-      sprite
-        .setRenderNodeRole("Submitter", globalScene.spriteSubmitter, {
-          tone: [0.0, 0.0, 0.0, 0.0],
-          hasShadow: false,
-          teraColor: getTypeRgb(pokemon.getTeraType()),
-          isTerastallized: pokemon.isTerastallized,
-        })
-        .setRenderNodeRole("BatchHandler", globalScene.spriteBatchHandler);
+    if (setPipeline) {
+      sprite.setPipeline(globalScene.spritePipeline, {
+        tone: [0.0, 0.0, 0.0, 0.0],
+        hasShadow: false,
+        teraColor: getTypeRgb(pokemon.getTeraType()),
+        isTerastallized: pokemon.isTerastallized,
+      });
     }
 
     sprite
-      .setRenderNodeData(globalScene.spriteSubmitter, "ignoreTimeTint", true)
-      .setRenderNodeData(globalScene.spriteSubmitter, "spriteKey", spriteKey)
-      .setRenderNodeData(globalScene.spriteSubmitter, "shiny", pokemon.shiny)
-      .setRenderNodeData(globalScene.spriteSubmitter, "variant", pokemon.variant);
+      .setPipelineData("ignoreTimeTint", true)
+      .setPipelineData("spriteKey", spriteKey)
+      .setPipelineData("shiny", pokemon.shiny)
+      .setPipelineData("variant", pokemon.variant);
 
     for (let k of ["spriteColors", "fusionSpriteColors"]) {
       if (pokemon.summonData.speciesForm) {
         k += "Base";
       }
-      sprite.renderNodeData[globalScene.spriteSubmitter.name][k] =
-        pokemon.getSprite().renderNodeData[globalScene.spriteSubmitter.name][k];
+      sprite.pipelineData[k] = pokemon.getSprite().pipelineData[k];
     }
 
     return sprite;
   }
 
   private getPokemonSprite(): Phaser.GameObjects.Sprite {
-    return globalScene
-      .addPokemonSprite(
-        this.pokemon,
-        this.evolutionBaseBg.displayWidth / 2,
-        this.evolutionBaseBg.displayHeight / 2,
-        "pkmn__sub",
-      )
-      .setRenderNodeRole("Submitter", globalScene.spriteSubmitter, {
-        tone: [0.0, 0.0, 0.0, 0.0],
-        ignoreTimeTint: true,
-      })
-      .setRenderNodeRole("BatchHandler", globalScene.spriteBatchHandler);
+    const sprite = globalScene.addPokemonSprite(
+      this.pokemon,
+      this.evolutionBaseBg.displayWidth / 2,
+      this.evolutionBaseBg.displayHeight / 2,
+      "pkmn__sub",
+    );
+    sprite.setPipeline(globalScene.spritePipeline, {
+      tone: [0.0, 0.0, 0.0, 0.0],
+      ignoreTimeTint: true,
+    });
+    return sprite;
   }
 
   /**
@@ -174,12 +169,12 @@ export class EvolutionPhase extends Phase {
     this.pokemonSprite = this.configureSprite(this.pokemon, this.getPokemonSprite());
     this.pokemonTintSprite = this.configureSprite(
       this.pokemon,
-      this.getPokemonSprite().setAlpha(0).setTint(0xffffff).setTintMode(Phaser.TintModes.FILL),
+      this.getPokemonSprite().setAlpha(0).setTintFill(0xffffff),
     );
     this.pokemonEvoSprite = this.configureSprite(this.pokemon, this.getPokemonSprite().setVisible(false));
     this.pokemonEvoTintSprite = this.configureSprite(
       this.pokemon,
-      this.getPokemonSprite().setVisible(false).setTint(0xffffff).setTintMode(Phaser.TintModes.FILL),
+      this.getPokemonSprite().setVisible(false).setTintFill(0xffffff),
     );
 
     this.evolutionContainer.add([

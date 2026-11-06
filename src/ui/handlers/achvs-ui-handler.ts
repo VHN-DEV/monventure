@@ -13,7 +13,6 @@ import { ScrollBar } from "#ui/scroll-bar";
 import { addTextObject } from "#ui/text";
 import { addWindow } from "#ui/ui-theme";
 import i18next from "i18next";
-import Phaser from "phaser";
 
 const Page = {
   ACHIEVEMENTS: 0,
@@ -462,9 +461,7 @@ export class AchvsUiHandler extends MessageUiHandler {
 
       icon.setVisible(true);
       if (tinted) {
-        icon //
-          .setTint(0)
-          .setTintMode(Phaser.TintModes.FILL);
+        icon.setTintFill(0);
       } else {
         icon.clearTint();
       }

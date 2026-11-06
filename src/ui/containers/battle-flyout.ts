@@ -10,7 +10,6 @@ import type { EnemyPokemon, Pokemon } from "#field/pokemon";
 import type { Move } from "#moves/move";
 import { addTextObject } from "#ui/text";
 import { fixedInt } from "#utils/common";
-import Phaser from "phaser";
 
 /** Container for info about a {@linkcode Move} */
 interface MoveInfo {

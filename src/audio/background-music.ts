@@ -1,8 +1,7 @@
 import { globalScene } from "#app/global-scene";
 import type { AnySound } from "#audio/audio-manager";
 import { fixedInt } from "#utils/common";
-import Phaser from "phaser";
-import SoundFade from "phaser4-rex-plugins/plugins/soundfade";
+import SoundFade from "phaser3-rex-plugins/plugins/soundfade";
 
 /**
  * Class representing a single background music track.

@@ -20,7 +20,6 @@ import { getCookie } from "#utils/cookies";
 import { getEnumValues } from "#utils/enums";
 import { toCamelCase } from "#utils/strings";
 import i18next from "i18next";
-import Phaser from "phaser";
 import type { Writable } from "type-fest";
 
 type ConditionalMenu = {

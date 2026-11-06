@@ -47,7 +47,6 @@ import { hslToHex } from "#utils/color-utils";
 import { BooleanHolder, NumberHolder, randSeedFloat, toDmgValue } from "#utils/common";
 import { getModifierType } from "#utils/modifier-utils";
 import i18next from "i18next";
-import Phaser from "phaser";
 
 export type ModifierPredicate = (modifier: Modifier) => boolean;
 

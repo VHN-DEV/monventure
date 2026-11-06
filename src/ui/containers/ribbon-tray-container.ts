@@ -8,7 +8,6 @@ import type { MessageUiHandler } from "#ui/message-ui-handler";
 import { addWindow } from "#ui/ui-theme";
 import { getAvailableRibbons, getRibbonKey, orderedRibbons } from "#utils/ribbon-utils";
 import i18next from "i18next";
-import Phaser from "phaser";
 
 export class RibbonTray extends Phaser.GameObjects.Container {
   private trayBg: Phaser.GameObjects.NineSlice;

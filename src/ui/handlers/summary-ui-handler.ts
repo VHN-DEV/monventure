@@ -30,11 +30,9 @@ import { UiHandler } from "#ui/ui-handler";
 import { argbFromRgba, rgbHexToRgba } from "#utils/color-utils";
 import { fixedInt, formatStat, getBiomeName, getLocalizedSpriteKey, getShinyDescriptor, padInt } from "#utils/common";
 import { getEnumValues } from "#utils/enums";
-import { addMask } from "#utils/mask-utils";
 import { getDexNumber, getStarterColors } from "#utils/pokemon-utils";
 import { toCamelCase, toTitleCase } from "#utils/strings";
 import i18next from "i18next";
-import Phaser from "phaser";
 
 enum Page {
   PROFILE,
@@ -387,19 +385,18 @@ export class SummaryUiHandler extends UiHandler {
     this.pokemonSprite.play(spriteKey);
 
     this.pokemonSprite
-      .setRenderNodeData(globalScene.spriteSubmitter, "teraColor", getTypeRgb(this.pokemon.getTeraType()))
-      .setRenderNodeData(globalScene.spriteSubmitter, "isTerastallized", this.pokemon.isTerastallized)
-      .setRenderNodeData(globalScene.spriteSubmitter, "ignoreTimeTint", true)
-      .setRenderNodeData(globalScene.spriteSubmitter, "spriteKey", this.pokemon.getSpriteKey())
-      .setRenderNodeData(globalScene.spriteSubmitter, "shiny", this.pokemon.shiny)
-      .setRenderNodeData(globalScene.spriteSubmitter, "variant", this.pokemon.variant);
+      .setPipelineData("teraColor", getTypeRgb(this.pokemon.getTeraType()))
+      .setPipelineData("isTerastallized", this.pokemon.isTerastallized)
+      .setPipelineData("ignoreTimeTint", true)
+      .setPipelineData("spriteKey", this.pokemon.getSpriteKey())
+      .setPipelineData("shiny", this.pokemon.shiny)
+      .setPipelineData("variant", this.pokemon.variant);
     ["spriteColors", "fusionSpriteColors"].forEach(k => {
-      delete this.pokemonSprite.renderNodeData[globalScene.spriteSubmitter.name][`${k}Base`];
+      delete this.pokemonSprite.pipelineData[`${k}Base`];
       if (this.pokemon?.summonData.speciesForm) {
         k += "Base";
       }
-      this.pokemonSprite.renderNodeData[globalScene.spriteSubmitter.name][k] =
-        this.pokemon?.getSprite().renderNodeData[globalScene.spriteSubmitter.name][k];
+      this.pokemonSprite.pipelineData[k] = this.pokemon?.getSprite().pipelineData[k];
     });
     this.pokemon.cry();
 
@@ -1054,16 +1051,15 @@ export class SummaryUiHandler extends UiHandler {
           profileContainer.add(abilityInfo.descriptionText);
 
           // Sets up the mask that hides the description text to give an illusion of scrolling
-          const descriptionTextMaskRect = globalScene.make
-            .graphics({})
-            .setScale(6)
-            .fillStyle(0xffffff)
-            .beginPath()
-            .fillRect(110, 90, 206, 31);
+          const descriptionTextMaskRect = globalScene.make.graphics({});
+          descriptionTextMaskRect.setScale(6);
+          descriptionTextMaskRect.fillStyle(0xffffff);
+          descriptionTextMaskRect.beginPath();
+          descriptionTextMaskRect.fillRect(110, 90, 206, 31);
 
-          addMask(abilityInfo.descriptionText, descriptionTextMaskRect);
-          // Destroys the mask when the description text is destroyed to avoid leaking
-          abilityInfo.descriptionText.on(Phaser.GameObjects.Events.DESTROY, () => descriptionTextMaskRect.destroy());
+          const abilityDescriptionTextMask = descriptionTextMaskRect.createGeometryMask();
+
+          abilityInfo.descriptionText.setMask(abilityDescriptionTextMask);
 
           const abilityDescriptionLineCount = Math.floor(abilityInfo.descriptionText.displayHeight / 14.83);
 
@@ -1239,11 +1235,18 @@ export class SummaryUiHandler extends UiHandler {
         this.statsContainer.add(nextLvExpText);
 
         const expOverlay = globalScene.add.image(140, 153, "summary_stats_overlay_exp");
-        expOverlay //
-          .setOrigin(0, 0)
-          .setCrop(0, 0, Math.floor(expRatio * 64), expOverlay.height);
+        expOverlay.setOrigin(0, 0);
         this.statsContainer.add(expOverlay);
 
+        const expMaskRect = globalScene.make.graphics({});
+        expMaskRect.setScale(6);
+        expMaskRect.fillStyle(0xffffff);
+        expMaskRect.beginPath();
+        expMaskRect.fillRect(140 + pageContainer.x, 152 + pageContainer.y + 22, Math.floor(expRatio * 64), 3);
+
+        const expMask = expMaskRect.createGeometryMask();
+
+        expOverlay.setMask(expMask);
         this.abilityPrompt = globalScene.add.image(
           0,
           0,
@@ -1354,15 +1357,15 @@ export class SummaryUiHandler extends UiHandler {
         this.moveDescriptionText = addTextObject(1, 84, "", TextStyle.WINDOW_ALT, { wordWrap: { width: 1224 } });
         this.movesContainer.add(this.moveDescriptionText);
 
-        const moveDescriptionTextMaskRect = globalScene.make
-          .graphics({})
-          .setScale(6)
-          .fillStyle(0xffffff)
-          .beginPath()
-          .fillRect(112, 121, 205, 59);
-        addMask(this.moveDescriptionText, moveDescriptionTextMaskRect);
-        // Destroy this once the moveDescriptionText is destroyed to prevent memory leaks
-        this.moveDescriptionText.once(Phaser.GameObjects.Events.DESTROY, () => moveDescriptionTextMaskRect.destroy());
+        const moveDescriptionTextMaskRect = globalScene.make.graphics({});
+        moveDescriptionTextMaskRect.setScale(6);
+        moveDescriptionTextMaskRect.fillStyle(0xffffff);
+        moveDescriptionTextMaskRect.beginPath();
+        moveDescriptionTextMaskRect.fillRect(112, 121, 205, 59);
+
+        const moveDescriptionTextMask = moveDescriptionTextMaskRect.createGeometryMask();
+
+        this.moveDescriptionText.setMask(moveDescriptionTextMask);
         break;
       }
     }

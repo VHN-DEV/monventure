@@ -2,7 +2,6 @@ import { getIconForLatestInput, getSettingNameWithKeycode } from "#inputs/config
 import { SettingKeyboard } from "#system/settings-keyboard";
 import type { InterfaceConfig, MappingSettingName, SelectedDevice } from "#types/inputs";
 import { toUpperSnakeCase } from "#utils/strings";
-import Phaser from "phaser";
 import { expect } from "vitest";
 
 export class InGameManip {

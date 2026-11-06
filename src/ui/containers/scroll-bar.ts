@@ -1,5 +1,4 @@
 import { globalScene } from "#app/global-scene";
-import Phaser from "phaser";
 
 /**
  * A vertical scrollbar element that resizes dynamically based on the current scrolling

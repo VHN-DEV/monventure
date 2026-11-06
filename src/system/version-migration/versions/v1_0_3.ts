@@ -2,7 +2,7 @@ import { defaultStarterSpecies } from "#app/constants";
 import { speciesDataRegistry } from "#app/global-species-data-registry";
 import { AbilityAttr } from "#enums/ability-attr";
 import { DexAttr } from "#enums/dex-attr";
-import type { StarterData, SystemSaveData } from "#types/save-data";
+import type { SystemSaveData } from "#types/save-data";
 import type { SystemSaveMigrator } from "#types/save-migrators";
 
 const createStarterData: SystemSaveMigrator = {
@@ -16,7 +16,7 @@ const createStarterData: SystemSaveMigrator = {
 
     const allStarterIds = speciesDataRegistry.getAllStarters();
 
-    data.starterData = {} as StarterData;
+    data.starterData = {};
     for (const speciesId of allStarterIds) {
       data.starterData[speciesId] = {
         moveset: null,

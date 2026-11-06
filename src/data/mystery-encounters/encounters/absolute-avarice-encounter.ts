@@ -41,7 +41,6 @@ import type { HeldModifierConfig } from "#types/held-modifier-config";
 import { randInt } from "#utils/common";
 import { groupStatChange } from "#utils/stat-change";
 import i18next from "i18next";
-import Phaser from "phaser";
 
 /** the i18n namespace for this encounter */
 const namespace = "mysteryEncounters/absoluteAvarice";

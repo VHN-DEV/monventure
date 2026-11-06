@@ -52,12 +52,11 @@ import { RibbonData } from "#system/ribbon-data";
 import { TrainerData } from "#system/trainer-data";
 import { applySessionVersionMigration, applySystemVersionMigration } from "#system/version-converter";
 import { vouchers } from "#system/voucher";
+import type { DexData, DexEntry } from "#types/dex-data";
 import type {
   AchvUnlocks,
   AppliedMigrators,
   DexAttrProps,
-  DexData,
-  DexEntry,
   RunHistoryData,
   SeenDialogues,
   SessionSaveData,
@@ -127,7 +126,7 @@ export class GameData {
       this.trainerId = randInt(65536);
       this.secretId = randInt(65536);
     }
-    this.starterData = {} as StarterData;
+    this.starterData = {};
     this.gameStats = new GameStats();
     this.runHistory = {};
     this.unlocks = {
@@ -1546,7 +1545,7 @@ export class GameData {
   }
 
   private initStarterData(): void {
-    const starterData = {} as StarterData;
+    const starterData: StarterData = {};
 
     const starterSpeciesIds = speciesDataRegistry.getAllStarters();
     for (const speciesId of starterSpeciesIds) {

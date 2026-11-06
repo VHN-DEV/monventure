@@ -5,7 +5,6 @@ import { EggEventType } from "#events/egg";
 import type { EggHatchSceneUiHandler } from "#ui/egg-hatch-scene-ui-handler";
 import { addTextObject } from "#ui/text";
 import { addWindow } from "#ui/ui-theme";
-import Phaser from "phaser";
 
 /** A container that displays the count of hatching eggs */
 export class EggCounterContainer extends Phaser.GameObjects.Container {

@@ -1,5 +1,4 @@
 import { GameManagerHelper } from "#test/helpers/game-manager-helper";
-import Phaser from "phaser";
 import { vi } from "vitest";
 
 export class RngHelper extends GameManagerHelper {

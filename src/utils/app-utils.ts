@@ -1,5 +1,3 @@
-import Phaser from "phaser";
-
 /** @returns Whether the device has a touchscreen */
 export function hasTouchscreen(): boolean {
   return window.matchMedia("(hover: none), (pointer: coarse)").matches;

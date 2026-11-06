@@ -12,7 +12,6 @@ import { addTextObject } from "#ui/text";
 import { fixedInt, getLocalizedSpriteKey, getShinyDescriptor } from "#utils/common";
 import { getPokemonTypeLocaleKey } from "#utils/i18n";
 import i18next from "i18next";
-import Phaser from "phaser";
 
 /**
  * Parameters influencing the position of elements within the battle info container
@@ -76,6 +75,8 @@ export abstract class BattleInfo extends Phaser.GameObjects.Container {
   protected type2Icon: Phaser.GameObjects.Sprite;
   protected type3Icon: Phaser.GameObjects.Sprite;
   protected expBar: Phaser.GameObjects.Image;
+
+  public expMaskRect: Phaser.GameObjects.Graphics;
 
   protected statsContainer: Phaser.GameObjects.Container;
   protected statsBox: Phaser.GameObjects.Sprite;
@@ -464,8 +465,7 @@ export abstract class BattleInfo extends Phaser.GameObjects.Container {
 
     this.teraIcon
       .setVisible(ty !== PokemonType.UNKNOWN)
-      .setTint(Phaser.Display.Color.GetColor(...getTypeRgb(ty)))
-      .setTintMode(Phaser.TintModes.FILL)
+      .setTintFill(Phaser.Display.Color.GetColor(...getTypeRgb(ty)))
       .setPositionRelative(this.nameText, this.nameText.displayWidth + this.genderText.displayWidth + 1, 2);
     this.lastTeraType = ty;
 

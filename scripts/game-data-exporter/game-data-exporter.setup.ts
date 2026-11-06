@@ -6,7 +6,6 @@
  */
 
 import "vitest-canvas-mock";
-import "#app/extensions"; // needed for phaser injection
 
 import { BattleScene } from "#app/battle-scene";
 import { getGameMode } from "#app/game-mode";

@@ -35,7 +35,6 @@ import { toCamelCase, toPascalCase } from "#utils/strings";
 import { ValueHolder } from "#utils/value-holder";
 import { QuantizerCelebi } from "@material/material-color-utilities";
 import i18next from "i18next";
-import Phaser from "phaser";
 import type { If, IsNumericLiteral } from "type-fest";
 
 export enum Region {
@@ -113,6 +112,7 @@ export abstract class PokemonSpeciesForm {
   public speciesId: SpeciesId;
   protected _formIndex: number;
   protected _generation: number;
+  // TODO: Make these not accept UNKNOWN or STELLAR
   readonly type1: RegularPokemonType;
   readonly type2: RegularPokemonType | null;
   readonly height: number;
@@ -733,8 +733,7 @@ export abstract class PokemonSpeciesForm {
         });
         console.warn = originalWarn;
         if (globalScene.anims.exists(spriteKey)) {
-          // Bang is safe since we just checked that the animation exists
-          globalScene.anims.get(spriteKey)!.frameRate = 10;
+          globalScene.anims.get(spriteKey).frameRate = 10;
         } else {
           globalScene.anims.create({
             key: this.getSpriteKey(female, formIndex, shiny, variant, back),
