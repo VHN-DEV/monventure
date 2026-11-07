@@ -473,6 +473,12 @@ export class LoadingScene extends SceneBase {
       });
     }
 
+    const showLoadingGraphics = () => {
+      for (const g of loadingGraphics) {
+        g.setVisible(true);
+      }
+    };
+
     const intro = this.add
       .video(0, 0)
       .setOrigin(0)
@@ -485,10 +491,10 @@ export class LoadingScene extends SceneBase {
           ease: "Sine.easeIn",
           onComplete: () => video.destroy(),
         });
-        for (const g of loadingGraphics) {
-          g.setVisible(true);
-        }
-      });
+        showLoadingGraphics();
+      })
+      // Without this, a missing video would leave the screen blank until everything has loaded
+      .once(Phaser.GameObjects.Events.VIDEO_ERROR, showLoadingGraphics);
 
     this.load
       .once(this.LOAD_EVENTS.START, () => {
