@@ -7,6 +7,7 @@ import { UiMode } from "#enums/ui-mode";
 import type { CommandPhase } from "#phases/command-phase";
 import { GameManager } from "#test/framework/game-manager";
 import type { BallUiHandler } from "#ui/ball-ui-handler";
+import type { ModifierSelectUiHandler } from "#ui/modifier-select-ui-handler";
 import type { OptionSelectUiHandler } from "#ui/option-select-ui-handler";
 import Phaser from "phaser";
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
@@ -238,14 +239,83 @@ describe("UI - Tap input", () => {
     });
   });
 
-  it("should not pick a reward from a tap, even though the shop awaits action input", async () => {
-    await startBattle();
-    const handler = game.scene.ui.handlers[UiMode.MODIFIER_SELECT];
-    const processInput = vi.spyOn(handler, "processInput");
-    handler["awaitingActionInput"] = true;
+  describe("Reward screen", () => {
+    /** Opens the reward screen, with the action callback replaced by a spy */
+    async function openRewards() {
+      await startBattle();
+      game.move.use(MoveId.SPLASH);
+      await game.doKillOpponents();
+      await game.phaseInterceptor.to("SelectModifierPhase");
 
-    expect(handler.processTap(100, -30)).toBe(false);
+      const handler = game.scene.ui.getHandler<ModifierSelectUiHandler>();
+      await vi.waitFor(() => expect(handler["awaitingActionInput"]).toBe(true));
+      const onActionInput = vi.fn(() => true);
+      handler["onActionInput"] = onActionInput;
+      handler.setRowCursor(1);
+      handler.setCursor(0);
+      return { handler, onActionInput };
+    }
 
-    expect(processInput).not.toHaveBeenCalled();
+    it("should only highlight a reward on the first tap, then pick it on the second", async () => {
+      const { handler, onActionInput } = await openRewards();
+      const { x, y } = handler.options[1];
+
+      expect(game.scene.ui.processTap(x, y)).toBe(true);
+
+      expect(handler.getCursor()).toBe(1);
+      expect(onActionInput).not.toHaveBeenCalled();
+
+      expect(game.scene.ui.processTap(x, y)).toBe(true);
+
+      expect(onActionInput).toHaveBeenCalledExactlyOnceWith(1, 1);
+    });
+
+    it("should pick the highlighted reward on the first tap", async () => {
+      const { handler, onActionInput } = await openRewards();
+      const { x, y } = handler.options[0];
+
+      game.scene.ui.processTap(x, y);
+
+      expect(onActionInput).toHaveBeenCalledExactlyOnceWith(1, 0);
+    });
+
+    it("should reach shop items, which have their own row cursors", async () => {
+      const { handler, onActionInput } = await openRewards();
+      expect(handler.shopOptionsRows).toHaveLength(1);
+      const { x, y } = handler.shopOptionsRows[0][2];
+
+      game.scene.ui.processTap(x, y);
+      game.scene.ui.processTap(x, y);
+
+      expect(onActionInput).toHaveBeenCalledExactlyOnceWith(2, 2);
+    });
+
+    it("should require two taps for the reroll button", async () => {
+      const { handler, onActionInput } = await openRewards();
+      const reroll = handler["rerollButtonContainer"];
+      reroll.visible = true;
+
+      game.scene.ui.processTap(reroll.x + 10, reroll.y);
+      expect(onActionInput).not.toHaveBeenCalled();
+
+      game.scene.ui.processTap(reroll.x + 10, reroll.y);
+
+      expect(onActionInput).toHaveBeenCalledExactlyOnceWith(0, 0);
+    });
+
+    it("should ignore hidden buttons, empty space, and taps before the screen is ready", async () => {
+      const { handler, onActionInput } = await openRewards();
+      const reroll = handler["rerollButtonContainer"];
+      reroll.visible = false;
+
+      expect(game.scene.ui.processTap(reroll.x + 10, reroll.y)).toBe(false);
+      expect(game.scene.ui.processTap(10, -20)).toBe(false);
+
+      handler["awaitingActionInput"] = false;
+      expect(game.scene.ui.processTap(handler.options[0].x, handler.options[0].y)).toBe(false);
+
+      expect(onActionInput).not.toHaveBeenCalled();
+      handler["awaitingActionInput"] = true;
+    });
   });
 });

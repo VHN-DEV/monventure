@@ -239,7 +239,7 @@ input:-internal-autofill-selected {
   pointer-events: none;
 }
 
-#touchControls:not([data-configuring]) .control-group > * {
+#touchControls:not([data-configuring]) [data-key] {
   pointer-events: auto;
 }
 

@@ -24,6 +24,12 @@ export const SHOP_OPTIONS_ROW_LIMIT = 7;
 const SINGLE_SHOP_ROW_YOFFSET = 12;
 const DOUBLE_SHOP_ROW_YOFFSET = 24;
 const OPTION_BUTTON_YPOSITION = -62;
+/** How far a tap can be from the center of a reward, including its label */
+const REWARD_HALF_HEIGHT = 22;
+/** How far a tap can be from the center of a shop item, including its label */
+const SHOP_ITEM_HALF_HEIGHT = 14;
+/** The tappable width of the buttons on the left, which is enough for their text in any language */
+const LEFT_BUTTON_WIDTH = 80;
 
 export class ModifierSelectUiHandler extends AwaitableUiHandler {
   private modifierContainer: Phaser.GameObjects.Container;
@@ -530,6 +536,68 @@ export class ModifierSelectUiHandler extends AwaitableUiHandler {
     }
 
     return success;
+  }
+
+  override processTap(x: number, y: number): boolean {
+    if (!this.awaitingActionInput) {
+      return false;
+    }
+
+    const target = this.getOptionAt(x, y) ?? this.getButtonAt(x, y);
+    if (!target) {
+      return false;
+    }
+
+    const [rowCursor, cursor] = target;
+    if (rowCursor === this.rowCursor && cursor === this.cursor) {
+      return this.processInput(Button.ACTION);
+    }
+
+    // Picking a reward can't be undone, so the first tap only shows its description
+    this.setRowCursor(rowCursor);
+    this.setCursor(cursor);
+    this.getUi().playSelect();
+    return true;
+  }
+
+  /** @returns The row and column cursors of the reward or shop item at the given position, or `null` if there is none */
+  private getOptionAt(x: number, y: number): [number, number] | null {
+    // Ordered by row cursor, starting from row 1
+    const rows = [this.options, ...this.shopOptionsRows.toReversed()];
+
+    for (const [index, options] of rows.entries()) {
+      const halfWidth = globalScene.scaledCanvas.width / (options.length + 2) / 2;
+      const halfHeight = index === 0 ? REWARD_HALF_HEIGHT : SHOP_ITEM_HALF_HEIGHT;
+      const column = options.findIndex(
+        option => Math.abs(x - option.x) <= halfWidth && Math.abs(y - option.y) <= halfHeight,
+      );
+      if (column !== -1) {
+        return [index + 1, column];
+      }
+    }
+
+    return null;
+  }
+
+  /** @returns The row and column cursors of the button at the given position, or `null` if there is none */
+  private getButtonAt(x: number, y: number): [number, number] | null {
+    const reroll = this.rerollButtonContainer;
+    const transfer = this.transferButtonContainer;
+    const check = this.checkButtonContainer;
+    const lock = this.lockRarityButtonContainer;
+
+    // Ordered by column cursor, with the left and right edges of each button's text
+    const buttons = [
+      [reroll, reroll.x - 4, reroll.x + LEFT_BUTTON_WIDTH],
+      [transfer, transfer.x - 4 - this.transferButtonWidth / 6, transfer.x - 4],
+      [check, check.x - 4 - this.checkButtonWidth / 6, check.x - 4],
+      [lock, lock.x - 4, lock.x + LEFT_BUTTON_WIDTH],
+    ] as const;
+
+    const column = buttons.findIndex(
+      ([button, left, right]) => button.visible && x >= left && x <= right && Math.abs(y - button.y) <= 7,
+    );
+    return column === -1 ? null : [0, column];
   }
 
   setCursor(cursor: number): boolean {
